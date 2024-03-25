@@ -1,9 +1,11 @@
 const express = require('express');
-const { createServer } = require('node:http');
-const { join } = require('node:path');
+const http = require('http');
+const socketIO = require('socket.io');
+const { join } = require('path');
 
 const app = express();
-const server = createServer(app);
+const server = http.createServer(app);
+const io = socketIO(server);
 
 app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'index.html'));
@@ -12,7 +14,6 @@ app.get('/', (req, res) => {
 server.listen(3000, () => {
   console.log('server running at http://localhost:3000');
 });
-
 // tài xỉu
 
 
@@ -167,12 +168,16 @@ var Taixiu = function(){
     
 }
 
-tx = new Taixiu();
-
+// Kết nối với máy khách
 io.on('connection', function (socket) {
+    // Bắt sự kiện đặt cược từ máy khách
     socket.on('pull', function (data) {
-        msg = tx.putMoney(data.id,data.dice,data.money);
+        // Gọi hàm đặt cược và gửi kết quả trở lại máy khách
+        var msg = tx.putMoney(data.id, data.dice, data.money);
         socket.emit('pull', msg);
     });
 });
+
+// Khởi tạo và bắt đầu trò chơi
+var tx = new Taixiu();
 tx.gameStart();
