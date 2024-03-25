@@ -1,14 +1,16 @@
-var io = require('socket.io')(server);
-var express = require('express');
-var app = express();
-app.use(express.static('./www'));
+const express = require('express');
+const { createServer } = require('node:http');
+const { join } = require('node:path');
 
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
+const app = express();
+const server = createServer(app);
 
-// port
-server.listen(process.env.PORT || 80, function(){
-	console.log('server dang chay....');
+app.get('/', (req, res) => {
+  res.sendFile(join(__dirname, 'index.html'));
+});
+
+server.listen(3000, () => {
+  console.log('server running at http://localhost:3000');
 });
 
 // tài xỉu
